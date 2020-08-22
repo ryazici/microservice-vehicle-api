@@ -1,7 +1,13 @@
 package com.udacity.vehicles;
 
+import com.udacity.vehicles.domain.Condition;
+import com.udacity.vehicles.domain.Location;
+import com.udacity.vehicles.domain.car.Car;
+import com.udacity.vehicles.domain.car.CarRepository;
+import com.udacity.vehicles.domain.car.Details;
 import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import com.udacity.vehicles.domain.manufacturer.ManufacturerRepository;
+import com.udacity.vehicles.service.CarService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -30,13 +36,26 @@ public class VehiclesApiApplication {
      * @return the car manufacturers to add to the related repository
      */
     @Bean
-    CommandLineRunner initDatabase(ManufacturerRepository repository) {
+    CommandLineRunner initDatabase(ManufacturerRepository repository, CarService carService) {
+
+        Manufacturer audi = new Manufacturer(100, "Audi");
+        Details details = new Details();
+        details.setBody("Coupe");
+        details.setModel("2020");
+        details.setManufacturer(audi);
+
+        Car car = new Car();
+        car.setCondition(Condition.NEW);
+        car.setDetails(details);
+        car.setLocation(new Location(10d,10d));
+
         return args -> {
-            repository.save(new Manufacturer(100, "Audi"));
+            repository.save(audi);
             repository.save(new Manufacturer(101, "Chevrolet"));
             repository.save(new Manufacturer(102, "Ford"));
             repository.save(new Manufacturer(103, "BMW"));
             repository.save(new Manufacturer(104, "Dodge"));
+            carService.save(car);
         };
     }
 
